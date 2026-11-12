@@ -1,0 +1,26 @@
+---
+- name: Deploy StudentSphere
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Inspect existing MongoDB container
+      community.docker.docker_container_info:
+        name: studentsphere-mongodb
+      register: mongo_info
+
+    - name: Verify MongoDB container and database volume
+      assert:
+        that:
+          - mongo_info.exists
+          - mongo_info.container.State.Running
+          - "'studentsphere_mongodb_data' in (mongo_info.container.Mounts | selectattr('Name', 'defined') | map(attribute='Name') | list)"
+        fail_msg: "MongoDB container or expected database volume was not found."
+
+    - name: Ensure existing MongoDB container is running
+      community.docker.docker_container:
+        name: studentsphere-mongodb
+        state: started
+        comparisons:
+          "*": ignore

@@ -1,0 +1,22 @@
+---
+- name: StudentSphere Health Check
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Check MongoDB container
+      community.docker.docker_container_info:
+        name: studentsphere-mongodb
+      register: mongo
+
+    - name: Check Nagios container
+      community.docker.docker_container_info:
+        name: studentsphere-nagios
+      register: nagios
+
+    - name: Display health status
+      debug:
+        msg:
+          - "MongoDB: {{ 'RUNNING' if mongo.container.State.Running else 'STOPPED' }}"
+          - "Nagios: {{ 'RUNNING' if nagios.container.State.Running else 'STOPPED' }}"

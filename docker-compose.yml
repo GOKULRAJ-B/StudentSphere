@@ -1,0 +1,38 @@
+
+services:
+  mongodb:
+    image: mongo:8
+    container_name: studentsphere-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      studentsphere-net:
+        aliases:
+          - mongodb
+
+  studentsphere:
+    build: .
+    container_name: studentsphere-app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+    stdin_open: true
+    tty: true
+    networks:
+      - studentsphere-net
+
+volumes:
+  mongodb_data:
+
+networks:
+  studentsphere-net:
+    name: studentsphere_default
+    external: true

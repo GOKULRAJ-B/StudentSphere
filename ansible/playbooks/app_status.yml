@@ -1,0 +1,16 @@
+---
+- name: StudentSphere Application Status
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Inspect application container
+      community.docker.docker_container_info:
+        name: studentsphere-app
+      register: app
+
+    - name: Display application status
+      debug:
+        msg: "StudentSphere App: {{ 'RUNNING' if app.container.State.Running else 'STOPPED' }}"
+      when: app.exists

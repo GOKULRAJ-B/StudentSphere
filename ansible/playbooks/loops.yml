@@ -1,0 +1,16 @@
+---
+- name: StudentSphere Container Operations
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Restart StudentSphere containers
+      community.docker.docker_container:
+        name: "{{ item }}"
+        state: started
+        restart: true
+      loop:
+        - studentsphere-app
+        - studentsphere-mongodb
+        - studentsphere-nagios

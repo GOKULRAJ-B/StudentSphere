@@ -1,0 +1,20 @@
+
+---
+- name: Check StudentSphere Docker Environment
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Check Docker Engine connectivity
+      community.docker.docker_host_info:
+        docker_host: unix:///var/run/docker.sock
+      register: docker_info
+
+    - name: Display Docker server information
+      debug:
+        msg: "Docker Engine is accessible"
+
+    - name: Display running containers
+      debug:
+        var: docker_info.host_info.ContainersRunning

@@ -1,0 +1,24 @@
+---
+- name: StudentSphere Container Status
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  vars:
+    containers:
+      - studentsphere-app
+      - studentsphere-mongodb
+      - studentsphere-nagios
+
+  tasks:
+    - name: Inspect containers
+      community.docker.docker_container_info:
+        name: "{{ item }}"
+      loop: "{{ containers }}"
+      register: container_results
+
+    - name: Display container status
+      debug:
+        msg: "{{ item.item }} is {{ 'RUNNING' if item.container.State.Running else 'STOPPED' }}"
+      loop: "{{ container_results.results }}"
+      when: item.exists

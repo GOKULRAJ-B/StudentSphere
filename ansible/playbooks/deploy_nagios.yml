@@ -1,0 +1,20 @@
+
+---
+- name: Deploy StudentSphere Nagios
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Inspect Nagios network connections
+      community.docker.docker_container_info:
+        name: studentsphere-nagios
+      register: nagios_info
+
+    - name: Connect Nagios to StudentSphere network
+      community.docker.docker_network:
+        name: studentsphere_default
+        connected:
+          - studentsphere-nagios
+        state: present
+      when: "'studentsphere_default' not in nagios_info.container.NetworkSettings.Networks"

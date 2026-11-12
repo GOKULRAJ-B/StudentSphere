@@ -1,0 +1,24 @@
+---
+- name: StudentSphere Container Details
+  hosts: studentsphere
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Get container information
+      community.docker.docker_container_info:
+        name: "{{ item }}"
+      loop:
+        - studentsphere-app
+        - studentsphere-mongodb
+        - studentsphere-nagios
+      register: containers
+
+    - name: Display container details
+      debug:
+        msg:
+          - "Name: {{ item.item }}"
+          - "Status: {{ item.container.State.Status }}"
+          - "Image: {{ item.container.Config.Image }}"
+      loop: "{{ containers.results }}"
+      when: item.exists

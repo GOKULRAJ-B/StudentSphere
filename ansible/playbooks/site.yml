@@ -1,0 +1,5 @@
+---
+- import_playbook: deploy_stack.yml
+- import_playbook: deploy_nagios.yml
+- import_playbook: health_check.yml
+- import_playbook: app_status.yml
